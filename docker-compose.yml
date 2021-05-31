@@ -1,6 +1,28 @@
 version: "3"
 
 services:
+  nginx-proxy:
+    build: nginx
+    restart: always
+    volumes:
+      - ./nginx/default.conf:/tmp/default.conf
+    environment:
+      - APP_SERVER_ADDR=chirpstack-application-server:8080
+    ports:
+      - "80:80"
+    depends_on:
+      - chirpstack-application-server
+    # healthcheck:
+    #   test:
+    #     [
+    #       "CMD-SHELL",
+    #       "curl --silent --fail localhost:80/health-check || exit 1",
+    #     ]
+    #   interval: 10s
+    #   timeout: 10s
+    #   retries: 3
+    command: /app/start.sh
+
   chirpstack-network-server:
     image: chirpstack/chirpstack-network-server:3
     volumes:
@@ -24,7 +46,7 @@ services:
       - 1700:1700/udp
     volumes:
       - ./configuration/chirpstack-gateway-bridge:/etc/chirpstack-gateway-bridge
-    depends_on: 
+    depends_on:
       - mosquitto
 
   chirpstack-geolocation-server:
@@ -49,7 +71,7 @@ services:
     image: eclipse-mosquitto:2
     ports:
       - 1883:1883
-    volumes: 
+    volumes:
       - ./configuration/eclipse-mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
 
 volumes:

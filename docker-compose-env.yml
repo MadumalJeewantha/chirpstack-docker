@@ -1,6 +1,28 @@
 version: "3"
 
 services:
+  nginx-proxy:
+    build: nginx
+    restart: always
+    volumes:
+      - ./nginx/default.conf:/tmp/default.conf
+    environment:
+      - APP_SERVER_ADDR=chirpstack-application-server:8080
+    ports:
+      - "80:80"
+    depends_on:
+      - chirpstack-application-server
+    # healthcheck:
+    #   test:
+    #     [
+    #       "CMD-SHELL",
+    #       "curl --silent --fail localhost:80/health-check || exit 1",
+    #     ]
+    #   interval: 10s
+    #   timeout: 10s
+    #   retries: 3
+    command: /app/start.sh
+
   chirpstack-network-server:
     image: chirpstack/chirpstack-network-server:3
     environment:
@@ -33,7 +55,7 @@ services:
       - 1700:1700/udp
     environment:
       - INTEGRATION__MQTT__AUTH__GENERIC__SERVERS=tcp://mosquitto:1883
-    depends_on: 
+    depends_on:
       - mosquitto
 
   chirpstack-geolocation-server:
@@ -44,7 +66,7 @@ services:
   postgresql:
     image: postgres:9.6-alpine
     environment:
-      - POSTGRES_PASSWORD=root 
+      - POSTGRES_PASSWORD=root
     volumes:
       - ./configuration/postgresql/initdb:/docker-entrypoint-initdb.d
       - postgresqldata:/var/lib/postgresql/data

@@ -25,6 +25,7 @@ services:
 
   chirpstack-network-server:
     image: chirpstack/chirpstack-network-server:3
+    restart: unless-stopped
     environment:
       - POSTGRESQL__DSN=postgres://chirpstack_ns:chirpstack_ns@postgresql/chirpstack_ns?sslmode=disable
       - REDIS__URL=redis://redis:6379
@@ -38,6 +39,7 @@ services:
 
   chirpstack-application-server:
     image: chirpstack/chirpstack-application-server:3
+    restart: unless-stopped
     ports:
       - 8080:8080
     environment:
@@ -51,6 +53,7 @@ services:
 
   chirpstack-gateway-bridge:
     image: chirpstack/chirpstack-gateway-bridge:3
+    restart: unless-stopped
     ports:
       - 1700:1700/udp
     environment:
@@ -60,11 +63,13 @@ services:
 
   chirpstack-geolocation-server:
     image: chirpstack/chirpstack-geolocation-server:3
+    restart: unless-stopped
     environment:
       - GEO_SERVER__BACKEND__NAME=collos
 
   postgresql:
     image: postgres:9.6-alpine
+    restart: unless-stopped
     environment:
       - POSTGRES_PASSWORD=root
     volumes:
@@ -73,11 +78,13 @@ services:
 
   redis:
     image: redis:5-alpine
+    restart: unless-stopped
     volumes:
       - redisdata:/data
 
   mosquitto:
     image: eclipse-mosquitto:1.6
+    restart: unless-stopped
     ports:
       - 1883:1883
 

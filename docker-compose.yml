@@ -25,6 +25,7 @@ services:
 
   chirpstack-network-server:
     image: chirpstack/chirpstack-network-server:3
+    restart: unless-stopped
     volumes:
       - ./configuration/chirpstack-network-server:/etc/chirpstack-network-server
     depends_on:
@@ -35,6 +36,7 @@ services:
     image: chirpstack/chirpstack-application-server:3
     ports:
       - 8080:8080
+    restart: unless-stopped
     volumes:
       - ./configuration/chirpstack-application-server:/etc/chirpstack-application-server
     depends_on:
@@ -42,6 +44,7 @@ services:
 
   chirpstack-gateway-bridge:
     image: chirpstack/chirpstack-gateway-bridge:3
+    restart: unless-stopped
     ports:
       - 1700:1700/udp
     volumes:
@@ -51,11 +54,13 @@ services:
 
   chirpstack-geolocation-server:
     image: chirpstack/chirpstack-geolocation-server:3
+    restart: unless-stopped
     volumes:
       - ./configuration/chirpstack-geolocation-server:/etc/chirpstack-geolocation-server
 
   postgresql:
     image: postgres:9.6-alpine
+    restart: unless-stopped
     environment:
       - POSTGRES_PASSWORD=root
     volumes:
@@ -64,11 +69,13 @@ services:
 
   redis:
     image: redis:5-alpine
+    restart: unless-stopped
     volumes:
       - redisdata:/data
 
   mosquitto:
     image: eclipse-mosquitto:2
+    restart: unless-stopped
     ports:
       - 1883:1883
     volumes:
